@@ -1,0 +1,269 @@
+:source-highlighter: rouge
+:toc:
+:toc-placement!:
+
+= Tutorial de React Native
+
+Esse é um documento de referência para o aprendizado de React Native, indo do zero e do início da aprendizagem de JavaScript até hooks e utilização do Expo.
+
+toc::[]
+
+== JavaScript
+
+JavaScript é uma linguagem de alto nível inicialmente criada para desenvolvimento web mas que hoje em dia é utilizada para o desenvolvimento de vários tipos de aplicativos.
+
+=== Sintaxe Geral
+
+O JavaScript segue o modelo de _curly brackets_ popularizado pelo `C`. Assim a sua sintaxe é bem similar a maioria das linguagens modernas.
+
+[,js]
+----
+function hello() {
+    return "Hello";
+}
+
+const javascript = () => {
+    return "JavaScript";
+}
+
+let value = 0;
+
+for (let i = 0; i < 10; i++) {
+    value += i;
+}
+
+console.log(hello() + " " + javascript() + "! " + value); // imprimirá "Hello JavaScript! 45"
+----
+
+[NOTE]
+Mesmo o JavaScript sendo inspirado pelo C ele apresenta algumas diferenças significativas, a maior delas sendo a não obrigatoriedado do ponto e vírgula (`;`), porém, mesmo não sendo necessário, a maioria das pessoas inclui ele para delimitar o fim de linha
+
+=== Variáveis
+
+O JavaScript tem 3 jeitos diferentes de declarar variáveis, cada um com uma utilidade diferente.
+
+==== let
+
+`let` define variáveis que podem ter o seu valor alterado
+
+[,js]
+----
+let hello = "Hello JavaScript!";
+hello = "Bye JavaScript!"; // válido
+----
+
+==== const
+
+`const` define variáveis com valores fixos que *não* podem ser alterados
+
+[,js]
+----
+const hello = "Hello JavaScript!";
+hello = "Bye JavaScript!"; // inválido, causará um erro
+----
+
+==== var
+
+`var` restígio legado da época em que `let` e `const` não existiam. Ele define uma variável a qual pode ter o seu valor alterado e tem escopo global. *Ele não deve ser usado em código moderno em nenhuma situação*.
+
+[,js]
+----
+if (true) {
+    var hello = "Hello JavaScript!";
+}
+console.log(hello); // válido e imprimirá "Hello JavaScript!"
+----
+
+=== Lambdas (Funções Anônimas)
+
+Lambdas, também chamadas de funções anônimas, são funções que foram declaradas sem nome, elas são bem úteis quando se quer passar uma função como parâmetro para outra função (conhecida como callback). Além dessa utilidade, muitas pessoas na comunidade do JavaScript preferem usar funções anônimas atríbuidas à variáveis no lugar de funções tradicionais.
+
+[,js]
+----
+const javascript = (callback) => {
+    return callback() + " JavaScript!";
+}
+
+console.log(
+    javascript(() => {
+        return "Hello";
+    })
+); // imprimirá "Hello JavaScript!"
+----
+
+=== Objetos
+
+Objetos são um tipo de dado comumente utilizado no desenvolvimento de aplicativos em JavaScript, eles são similares a structs existentes em outros linguagens.
+
+[,js]
+----
+const hello = {
+    hello: "Hello",
+    javascript: () => {
+        return " JavaScript!";
+    }
+}
+
+console.log(hello.hello + hello.javascript()); // imprimirá "Hello JavaScript!"
+----
+
+[WARNING]
+A constância do `const` não se extende a valores dentro de objetos ou vetores, ou seja, os valores internos podem ser alterados.
+
+[,js]
+----
+const hello = {
+    hello: "Hello",
+    javascript: () => {
+        return " JavaScript!";
+    }
+}
+
+hello.hello = "Bye";
+
+console.log(hello.hello + hello.javascript()); // imprimirá "Bye JavaScript!"
+----
+
+=== Sintaxe Rest e Deestructuring
+
+Objetos e vetores no JavaScript podem ser manipulados de dois jeitos especiais, `rest` e `deestructuring`.
+
+==== Rest
+A sintaxe `rest` é utilizada para separar um objeto nas suas partes constituintes.
+
+[,js]
+----
+const helloArray = ["Hello", "JavaScript!"];
+console.log(...helloArray); // imprimirá "Hello JavaScript!"
+
+const byeObject = {
+    bye: "Bye "
+};
+const javascriptObject = {
+    javascript: "JavaScript!",
+    ...byeObject
+};
+console.log(javascriptObject.bye + javascriptObject.javascript); // imprimirá "Bye JavaScript!"
+----
+
+==== Deestructuring
+
+`Deestructuring` consiste em separar os componentes de um objeto ou de um vetor em variáveis separadas.
+
+[,js]
+----
+const helloObject = {
+    hello: "Hello",
+    javascript: () => {
+        return " JavaScript!";
+    }
+}
+const { hello, javascript } = helloObject;
+console.log(hello + javascript()); // imprimirá "Hello JavaScript!"
+
+const byeArray = ["Bye", " Java", "Script", "!"];
+const [a, b, ...c] = byeArray;
+console.log(a + b + c[0] + c[1]); // imprimirá "Bye JavaScript!"
+----
+
+[NOTE]
+A desestruturação de objetos requer que as variáveis novas tenham os mesmos nomes das chaves do objeto, enquanto a desestruturação de arrays permite que elas tenham qualquer nome.
+
+== TypeScript
+
+O TypeScript é um sistema de tipagem criado para suplementar a falta de um imbutido no JavaScript. Ele é um sistema de tipagem extremamente capaz mas que só funciona em tempo de compilação, o código feito em TypeScript sempre é transpilado para JavaScript antes de ser rodado, então todos os benefícios de tipagem forte são perdidos durante o _runtime_. Mesmo com esse problema, o TypeScript tem ficado cada vez mais popular e está, aos poucos, diminuindo a quantidade de código escrito em JavaScript puro.
+
+=== Tipagem de Variáveis
+
+Na maioria dos casos o TypeScript consegue inferir o tipo de uma variável se você inicializá-la junto com a declaração, mas, nos casos em que ela seja inicializada posteriormente ou em que o TypeScript infira um tipo mais limitado do que o intencionado, pode-se tipá-la manualmente.
+
+[,ts]
+----
+// neste caso o TypeScript infere que o tipo dessa variável é uma string, sem a necessiade de tipagem explícita
+const hello = "Hello ";
+
+// aqui, o TypeScript inferiria que essa variável deveria ser um number, e, tentar dar um valor de string para ela mostraria um erro
+// como dizemos que ela pode ser um número ou uma string esse problema não ocorre
+let typescript: string | number = 10;
+typescript = "TypeScript";
+
+// sem a tipagem explícita o TypeScript não iria inferir o tipo dessa variável e a consideraria como "Any"
+let exclamation: string | null; 
+exclamation = "!";
+
+console.log(hello + typescript + exclamation); // imprimirá "Hello TypeScript!"
+----
+
+=== Tipagem de Funções e Parâmetros
+
+A tipagem de funções e parâmetros segue aproximadamente o mesmo modelo que o de variáveis.
+
+[,ts]
+----
+function typescript(): string {
+    return "TypeScript!";
+};
+
+const hello = (callback: () => string): string => {
+    return "Hello " + callback();
+}
+
+console.log(hello(typescript)); // imprimirá "Hello TypeScript!"
+----
+
+=== interface e type
+
+Existem duas maneiras diferentes de construir um tipo customizado ambas apresentando sintaxes diferentes.
+
+[,ts]
+----
+interface helloInterface {
+    hello: string;
+}
+interface typescriptInterface extends helloInterface {
+    typescript: string;
+    exclamation?: string;
+}
+
+type helloType = {
+    hello: string;
+}
+type typescriptType = {
+    typescript: string;
+    exclamation?: string;
+} & helloType;
+----
+
+==== interface
+
+O `interface` é o mais simples das duas opções e por isso, também é mais limitado, a maior destas limitações sendo o fato que este só permite definir o tipo de objetos.
+
+==== type
+
+O `type` é mais completo, mas por isso também apresenta uma sintaxe um pouco estranha quando se intersecciona um tipo com o outro.
+
+[,ts]
+----
+type num = number | string; // define um tipo que pode ser um número ou uma string
+----
+
+== React Native e Expo
+
+O React foi uma revolução para o desenvolvimento web, o seu sistema de componentização foi tão importante que hoje em dia é usado como base para frameworks de interface novos, como o SwiftUI. Essencialmente, o React permite que código feito em JavaScript retorne HTML e, assim, seja interativo e reativo, facilitando a integração da lógica com a interface.
+
+O React Native usou a base criada pelo React e fez com que fosse retornado código de interface genérico ao invés do HTML, esse código de interface genérico é, posteriarmente, transformado em código *nativo* de interface para cada plataforma, assim, combinando os benefícios de frameworks de múltiplas plataformas com os de desenvolvimento nativo.
+
+O Expo é um _metaframework_ construído em cima do React Native que, além de fazer todas as configurações necessárias para o funcionamento do React Native, adiciona dezenas de funções que fazem uso dos APIs nativos do sistema, permitindo maior integração com o sistema operacional.
+
+=== Sintaxe Geral
+
+[,tsx]
+----
+const Component = () => {
+    return (
+        <View>
+            <Text>Hello Expo!<Text/>
+        </View>
+    );
+};
+----
